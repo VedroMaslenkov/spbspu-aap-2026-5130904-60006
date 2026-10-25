@@ -1,4 +1,30 @@
 #include <iostream>
+#include <limits>
+
+namespace {
+
+const int exit_success = 0;
+const int exit_invalid_input = 1;
+const int exit_calc_error = 2;
+
+using Counter = unsigned long long;
+
+bool safe_increment(Counter& counter)
+{
+  if (counter == std::numeric_limits<Counter>::max()) {
+    return false;
+  }
+  ++counter;
+  return true;
+}
+
+Counter abs_value(int value)
+{
+  const Counter v = static_cast<Counter>(value);
+  return value < 0 ? 0ULL - v : v;
+}
+
+}
 
 int main()
 {
@@ -7,8 +33,10 @@ int main()
   int current = 0;
   int elements = 0;
 
-  int count_grt = 0;
-  int count_pth = 0;
+  Counter count_grt = 0;
+  Counter count_pth = 0;
+  bool grt_overflow = false;
+  bool pth_overflow = false;
   bool after_zero = false;
 
   while (std::cin >> current) {
@@ -23,20 +51,26 @@ int main()
 
     if (elements >= 2) {
       if (previous1 < previous2 && previous1 > current) {
-        ++count_grt;
+        if (!safe_increment(count_grt)) {
+          grt_overflow = true;
+        }
       }
 
-      const long long a = previous2;
-      const long long b = previous1;
-      const long long c = current;
+      const Counter a = abs_value(previous2);
+      const Counter b = abs_value(previous1);
+      const Counter c = abs_value(current);
       if (a * a + b * b == c * c) {
-        ++count_pth;
+        if (!safe_increment(count_pth)) {
+          pth_overflow = true;
+        }
       }
     }
 
     previous2 = previous1;
     previous1 = current;
-    ++elements;
+    if (elements < 2) {
+      ++elements;
+    }
   }
 
   if (!after_zero) {
@@ -45,14 +79,25 @@ int main()
     } else {
       std::cerr << "Error: invalid input\n";
     }
-    return 1;
+    return exit_invalid_input;
   }
 
   if (!std::cin.eof()) {
     std::cerr << "Error: invalid input after zero\n";
-    return 1;
+    return exit_invalid_input;
   }
 
-  std::cout << count_grt << '\n' << count_pth << '\n';
-  return 0;
+  if (!grt_overflow) {
+    std::cout << count_grt << '\n';
+  } else {
+    std::cerr << "Error: counter overflow (GRT-LSS)\n";
+  }
+
+  if (!pth_overflow) {
+    std::cout << count_pth << '\n';
+  } else {
+    std::cerr << "Error: counter overflow (PTH-TRP)\n";
+  }
+
+  return (grt_overflow || pth_overflow) ? exit_calc_error : exit_success;
 }
