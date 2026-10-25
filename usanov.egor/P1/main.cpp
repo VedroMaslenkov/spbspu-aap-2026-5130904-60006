@@ -1,15 +1,13 @@
 #include <iostream>
 #include <limits>
 
-namespace {
-
 const int exit_success = 0;
 const int exit_invalid_input = 1;
 const int exit_calc_error = 2;
 
 using Counter = unsigned long long;
 
-bool safe_increment(Counter& counter)
+bool safeIncrement(Counter& counter)
 {
   if (counter == std::numeric_limits<Counter>::max()) {
     return false;
@@ -18,12 +16,10 @@ bool safe_increment(Counter& counter)
   return true;
 }
 
-Counter abs_value(int value)
+Counter absValue(int value)
 {
   const Counter v = static_cast<Counter>(value);
   return value < 0 ? 0ULL - v : v;
-}
-
 }
 
 int main()
@@ -51,16 +47,16 @@ int main()
 
     if (elements >= 2) {
       if (previous1 < previous2 && previous1 > current) {
-        if (!safe_increment(count_grt)) {
+        if (!safeIncrement(count_grt)) {
           grt_overflow = true;
         }
       }
 
-      const Counter a = abs_value(previous2);
-      const Counter b = abs_value(previous1);
-      const Counter c = abs_value(current);
+      const Counter a = absValue(previous2);
+      const Counter b = absValue(previous1);
+      const Counter c = absValue(current);
       if (a * a + b * b == c * c) {
-        if (!safe_increment(count_pth)) {
+        if (!safeIncrement(count_pth)) {
           pth_overflow = true;
         }
       }
