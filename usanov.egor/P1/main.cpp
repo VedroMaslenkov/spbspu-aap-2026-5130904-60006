@@ -9,7 +9,7 @@ using Counter = unsigned long long;
 
 bool safeIncrement(Counter& counter)
 {
-  if (counter == std::numeric_limits<Counter>::max()) {
+  if (counter == std::numeric_limits< Counter >::max()) {
     return false;
   }
   ++counter;
@@ -18,7 +18,7 @@ bool safeIncrement(Counter& counter)
 
 Counter absValue(int value)
 {
-  const Counter v = static_cast<Counter>(value);
+  const Counter v = static_cast< Counter >(value);
   return value < 0 ? 0ULL - v : v;
 }
 
